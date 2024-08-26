@@ -6,3 +6,4 @@ requirements.txt
 
 # environment variables
 .env
+sodlat/
