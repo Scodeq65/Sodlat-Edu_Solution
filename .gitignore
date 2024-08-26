@@ -1,0 +1,8 @@
+# python
+*.pyc
+__pycache__/
+token.py
+requirements.txtrequirements.txt
+
+# environment variables
+.env
