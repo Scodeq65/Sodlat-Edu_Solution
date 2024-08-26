@@ -5,7 +5,8 @@ Initialize the Flask application and configure it.
 """
 
 from flask import Flask
-from app.routes import main
+from app.routes.main import main
+
 
 def create_app():
     app = Flask(__name__)
