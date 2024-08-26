@@ -2,7 +2,7 @@
 *.pyc
 __pycache__/
 token.py
-requirements.txtrequirements.txt
+requirements.txt
 
 # environment variables
 .env
