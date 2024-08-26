@@ -1,8 +1,7 @@
 # python
 *.pyc
 __pycache__/
-token.py
-requirements.txt
+my_token.py
 
 # environment variables
 .env
