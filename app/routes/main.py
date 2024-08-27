@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 
 """
-Defines the main routes for the application.
+Defines the main routes for the application
+and initializes the database.
 """
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, Flask
+from app import db
+
 
 main = Blueprint('main', __name__)
+
 
 @main.route('/')
 def index():

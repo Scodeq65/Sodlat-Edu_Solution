@@ -18,7 +18,7 @@ class Config:
     """ Retrive d database URI 4rm d environament variable or
     use a default SQLite database
     """
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///sodlat_edu_solution.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////root/Sodlat-Edu_Solution/sodlat_edu_solution.db'
 
     """Retrieve the DEBUG mode setting from the environment
     variable or default to False.
