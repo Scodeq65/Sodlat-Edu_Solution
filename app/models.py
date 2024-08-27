@@ -2,12 +2,13 @@
 """This module defines the database models for SodLat Edu Solution."""
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
-
-class User(db.Model):
+class User(db.Model, UserMixin):
     """User model representing parents, teachers, and students."""
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +23,12 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.username} - Role: {self.role}>"
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Course(db.Model):
     """Course model representing the courses managed by teachers."""
