@@ -1,20 +1,29 @@
-<!-- templates/login.html -->
 {% extends "base.html" %}
+
 {% block content %}
-<h2>Login</h2>
-<form method="POST">
+  <h2>{{ welcome_message }}</h2>
+  <form method="POST">
     {{ form.hidden_tag() }}
-    <p>
-        {{ form.username.label }}<br>
-        {{ form.username(size=32) }}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}
-    </p>
-    <p>
-        {{ form.remember_me() }} {{ form.remember_me.label }}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
+    <div>
+      {{ form.identifier.label }}<br>
+      {{ form.identifier(size=32) }}<br>
+      {% for error in form.identifier.errors %}
+        <span class="error">{{ error }}</span>
+      {% endfor %}
+    </div>
+    <div>
+      {{ form.password.label }}<br>
+      {{ form.password(size=32) }}<br>
+      {% for error in form.password.errors %}
+        <span class="error">{{ error }}</span>
+      {% endfor %}
+    </div>
+    <div>
+      {{ form.remember_me() }} {{ form.remember_me.label }}<br>
+    </div>
+    <div>
+      {{ form.submit() }}
+    </div>
+  </form>
+  <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
 {% endblock %}

@@ -29,13 +29,17 @@ def register():
         flash('Registration successful. You can now log in.', 'success')
         return redirect(url_for('auth.login'))
 
-    return render_template('register.html', form=form)
-
+    return render_template('register.html', form=form, welcome_message="Welcome! Please create an account.")
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        if current_user.role == 'parent':
+            return redirect(url_for('main.parent_dashboard'))
+        elif current_user.role == 'teacher':
+            return redirect(url_for('main.teacher_dashboard'))
+        elif current_user.role == 'student':
+            return redirect(url_for('main.student_dashboard'))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -45,21 +49,13 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             flash('Login successful.', 'success')
-            return redirect(url_for('main.index'))
+            if user.role == 'parent':
+                return redirect(url_for('main.parent_dashboard'))
+            elif user.role == 'teacher':
+                return redirect(url_for('main.teacher_dashboard'))
+            elif user.role == 'student':
+                return redirect(url_for('main.student_dashboard'))
         else:
             flash('Invalid login credentials.', 'danger')
 
-    return render_template('login.html', form=form welcome_message="Welcome back! Please log in.")
-
-
-@auth.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('You have been logged out.', 'success')
-    return redirect(url_for('auth.login'))
-
-
-@auth.app_errorhandler(403)
-def forbidden(e):
-    return render_template('403.html'), 403
+    return render_template('login.html', form=form, welcome_message="Welcome back! Please log in.")
