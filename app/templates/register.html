@@ -1,24 +1,29 @@
-{% extends 'base.html' %}
-
+<!-- templates/register.html -->
+{% extends "base.html" %}
 {% block content %}
-<h1>Register</h1>
-<form method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-    <br>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    <br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <br>
-    <label for="role">Role:</label>
-    <select id="role" name="role">
-        <option value="parent">Parent</option>
-        <option value="teacher">Teacher</option>
-        <option value="student">Student</option>
-    </select>
-    <br>
-    <input type="submit" value="Register">
+<h2>Register</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.username.label }}<br>
+        {{ form.username(size=32) }}
+    </p>
+    <p>
+        {{ form.email.label }}<br>
+        {{ form.email(size=32) }}
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(size=32) }}
+    </p>
+    <p>
+        {{ form.password2.label }}<br>
+        {{ form.password2(size=32) }}
+    </p>
+    <p>
+        {{ form.role.label }}<br>
+        {{ form.role() }}
+    </p>
+    <p>{{ form.submit() }}</p>
 </form>
 {% endblock %}
