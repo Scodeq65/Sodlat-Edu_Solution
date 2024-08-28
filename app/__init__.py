@@ -30,5 +30,7 @@ def create_app():
 
     # Register Blueprints
     app.register_blueprint(main)
+    app.register_blueprint(auth)
+
 
     return app

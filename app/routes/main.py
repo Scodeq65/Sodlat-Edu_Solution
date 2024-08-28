@@ -13,6 +13,20 @@ from app import db
 main = Blueprint('main', __name__)
 
 
+def role_required(role):
+    """
+    Decorator to check if the user has the required role.
+    """
+    def wrapper(fn):
+        @login_required
+        def decorated_view(*args, **kwargs):
+            if current_user.role != role:
+                flash('Access denied.', 'danger')
+                return redirect(url_for('main.index'))
+            return fn(*args, **kwargs)
+        return decorated_view
+    return wrapper
+
 @main.route('/')
 def index():
     """
@@ -21,34 +35,28 @@ def index():
     return render_template('index.html')
 
 @main.route('/parent')
-@login_required
+@role_required('parent')
 def parent_dashboard():
     """
     Render the parent dashboard.
     """
-    if current_user.role != 'parent':
-        flash('Access denied.', 'danger')
-        return redirect(url_for('main.index'))
+
     return render_template('parent_dashboard.html')
 
 @main.route('/teacher')
-@login_required
+@role_required('teacher')
 def teacher_dashboard():
     """
     Render the teacher dashboard.
     """
-    if current_user.role != 'teacher':
-        flash('Access denied.', 'danger')
-        return redirect(url_for('main.index'))
+
     return render_template('teacher_dashboard.html')
 
 @main.route('/student')
-@login_required
+@role_required('student')
 def student_dashboard():
     """
     Render the student dashboard.
     """
-    if current_user.role != 'student':
-        flash('Access denied.', 'danger')
-        return redirect(url_for('main.index'))
+    
     return render_template('student_dashboard.html')
