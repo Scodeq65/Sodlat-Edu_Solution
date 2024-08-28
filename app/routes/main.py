@@ -7,7 +7,7 @@ and initializes the database.
 
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app import db
+from functools import wraps
 
 
 main = Blueprint('main', __name__)
@@ -18,6 +18,7 @@ def role_required(role):
     Decorator to check if the user has the required role.
     """
     def wrapper(fn):
+        @wraps(fn)
         @login_required
         def decorated_view(*args, **kwargs):
             if current_user.role != role:
@@ -27,12 +28,15 @@ def role_required(role):
         return decorated_view
     return wrapper
 
+
 @main.route('/')
+@login_required
 def index():
     """
     Render the homepage.
     """
     return render_template('index.html')
+
 
 @main.route('/parent')
 @role_required('parent')
@@ -43,6 +47,7 @@ def parent_dashboard():
 
     return render_template('parent_dashboard.html')
 
+
 @main.route('/teacher')
 @role_required('teacher')
 def teacher_dashboard():
@@ -52,11 +57,12 @@ def teacher_dashboard():
 
     return render_template('teacher_dashboard.html')
 
+
 @main.route('/student')
 @role_required('student')
 def student_dashboard():
     """
     Render the student dashboard.
     """
-    
+
     return render_template('student_dashboard.html')
