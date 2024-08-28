@@ -6,10 +6,9 @@ Initialize the Flask application and configure it.
 
 from flask import Flask
 from flask_migrate import Migrate
-from app.models import db
+from app.models import db, User
 from flask_login import LoginManager
 from app.routes.main import main
-from app.routes.auth import auth
 
 
 def create_app():
@@ -24,6 +23,10 @@ def create_app():
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     # Register Blueprints
     app.register_blueprint(main)
