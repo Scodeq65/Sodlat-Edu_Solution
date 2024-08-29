@@ -10,7 +10,6 @@ from app.forms import RegistrationForm, LoginForm
 
 auth = Blueprint('auth', __name__)
 
-
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -31,7 +30,6 @@ def register():
 
     return render_template('register.html', form=form, welcome_message="Welcome! Please create an account.")
 
-
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -42,19 +40,14 @@ def login():
         identifier = form.identifier.data
         user = User.query.filter((User.username == identifier) | (User.email == identifier)).first()
 
-        if user:
-            if user.check_password(form.password.data):
-                login_user(user, remember=form.remember_me.data)
-                flash('Login successful.', 'success')
-                return redirect_user_based_on_role()
-            else:
-                flash('Incorrect password. Please try again.', 'danger')
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            flash('Login successful.', 'success')
+            return redirect_user_based_on_role()
         else:
-            flash('No account found with this identifier. Please register.', 'warning')
-            return redirect(url_for('auth.register'))
+            flash('Invalid login credentials. Please try again.', 'danger')
 
     return render_template('login.html', form=form, welcome_message="Welcome back!")
-
 
 def redirect_user_based_on_role():
     if current_user.role == 'parent':
@@ -64,7 +57,13 @@ def redirect_user_based_on_role():
     elif current_user.role == 'student':
         return redirect(url_for('main.student_dashboard'))
     else:
-        # If no valid role is found, you might want to log out the user or handle it somehow
         logout_user()
         flash('Invalid role detected. Please log in again.', 'danger')
         return redirect(url_for('auth.login'))
+
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('main.index'))

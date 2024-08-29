@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
+    {% if current_user.is_authenticated %}
+        <nav>
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        </nav>
+    {% endif %}
     {% block content %}{% endblock %}
 </body>
 </html>
