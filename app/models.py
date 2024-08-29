@@ -76,14 +76,14 @@ class Assignment(db.Model):
         )
     
     class ProgressReport(db.Model):
-    """ProgressReport model for tracking student progress."""
-    __tablename__ = 'progress_reports'
-    id = db.Column(db.Integer, primary_key=True)
-    report_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    grade = db.Column(db.String(5), nullable=False)
-    comments = db.Column(db.Text, nullable=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
+        """ProgressReport model for tracking student progress."""
+        __tablename__ = 'progress_reports'
+        id = db.Column(db.Integer, primary_key=True)
+        report_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+        grade = db.Column(db.String(5), nullable=False)
+        comments = db.Column(db.Text, nullable=True)
+        student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+        course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
 
     def __repr__(self):
         return f"<ProgressReport Grade: {self.grade} - Student ID: {self.student_id}>"
