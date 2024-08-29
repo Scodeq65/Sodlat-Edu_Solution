@@ -34,28 +34,30 @@ def register():
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        if current_user.role == 'parent':
-            return redirect(url_for('main.parent_dashboard'))
-        elif current_user.role == 'teacher':
-            return redirect(url_for('main.teacher_dashboard'))
-        elif current_user.role == 'student':
-            return redirect(url_for('main.student_dashboard'))
+        return redirect_user_based_on_role()
 
     form = LoginForm()
     if form.validate_on_submit():
         identifier = form.identifier.data
         user = User.query.filter((User.username == identifier) | (User.email == identifier)).first()
 
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember_me.data)
-            flash('Login successful.', 'success')
-            if user.role == 'parent':
-                return redirect(url_for('main.parent_dashboard'))
-            elif user.role == 'teacher':
-                return redirect(url_for('main.teacher_dashboard'))
-            elif user.role == 'student':
-                return redirect(url_for('main.student_dashboard'))
+        if user:
+            if user.check_password(form.password.data):
+                login_user(user, remember=form.remember_me.data)
+                flash('Login successful.', 'success')
+                return redirect_user_based_on_role()
+            else:
+                flash('Incorrect password. Please try again.', 'danger')
         else:
-            flash('Invalid login credentials.', 'danger')
+            flash('No account found with this identifier. Please register.', 'warning')
+            return redirect(url_for('auth.register'))
 
-    return render_template('login.html', form=form, welcome_message="Welcome back! Please log in.")
+    return render_template('login.html', form=form, welcome_message="Welcome back!")
+
+def redirect_user_based_on_role():
+    if current_user.role == 'parent':
+        return redirect(url_for('main.parent_dashboard'))
+    elif current_user.role == 'teacher':
+        return redirect(url_for('main.teacher_dashboard'))
+    elif current_user.role == 'student':
+        return redirect(url_for('main.student_dashboard'))
