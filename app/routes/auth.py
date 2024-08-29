@@ -55,6 +55,8 @@ def login():
                 return redirect(url_for('main.teacher_dashboard'))
             elif user.role == 'student':
                 return redirect(url_for('main.student_dashboard'))
+            else:
+                return redirect(url_for('main.index'))
         else:
             flash('Invalid login credentials.', 'danger')
 
