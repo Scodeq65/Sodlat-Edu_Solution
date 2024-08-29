@@ -21,6 +21,10 @@ class User(db.Model, UserMixin):
     # Relationships
     courses = db.relationship('Course', backref='teacher', lazy=True)
     assignments = db.relationship('Assignment', backref='student', lazy=True)
+    progress_reports = db.relationship('ProgressReport', backref='student', lazy=True)
+    notifications = db.relationship('Notification', backref='recipient', lazy=True)
+    sent_messages = db.relationship('Message', foreign_keys='Message.sender_id', backref='sender', lazy=True)
+    received_messages = db.relationship('Message', foreign_keys='Message.receiver_id', backref='receiver', lazy=True)
 
     def __repr__(self):
         return f"<User {self.username} - Role: {self.role}>"
@@ -70,3 +74,42 @@ class Assignment(db.Model):
             f"<Assignment {self.title} - Student ID: {self.student_id} - "
             f"Course ID: {self.course_id}>"
         )
+    
+    class ProgressReport(db.Model):
+    """ProgressReport model for tracking student progress."""
+    __tablename__ = 'progress_reports'
+    id = db.Column(db.Integer, primary_key=True)
+    report_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    grade = db.Column(db.String(5), nullable=False)
+    comments = db.Column(db.Text, nullable=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
+
+    def __repr__(self):
+        return f"<ProgressReport Grade: {self.grade} - Student ID: {self.student_id}>"
+
+
+class Notification(db.Model):
+    """Notification model for sending updates to users."""
+    __tablename__ = 'notifications'
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(255), nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def __repr__(self):
+        return f"<Notification {self.message} - Recipient ID: {self.recipient_id}>"
+
+
+class Message(db.Model):
+    """Message model for communication between users."""
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def __repr__(self):
+        return f"<Message from {self.sender_id} to {self.receiver_id} - Sent at {self.timestamp}>"

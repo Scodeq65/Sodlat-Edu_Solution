@@ -1,0 +1,12 @@
+<!-- templates/notifications.html -->
+
+{% extends "base.html" %}
+{% block content %}
+<h2>Notifications</h2>
+
+{% for notification in notifications %}
+    <p>{{ notification.message }}</p>
+    <p>{{ notification.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+    <hr>
+{% endfor %}
+{% endblock %}

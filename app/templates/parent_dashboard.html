@@ -3,4 +3,23 @@
 {% block content %}
 <h1>Parent Dashboard</h1>
 <p>Welcome, {{ current_user.username }}!</p>
+
+<h3>Children's Progress</h3>
+{% for progress in children_progress %}
+    <p>Subject: {{ progress.subject }}</p>
+    <p>Grade: {{ progress.grade }}</p>
+    <p>Attendance: {{ progress.attendance }}%</p>
+    <p>Date: {{ progress.date.strftime('%Y-%m-%d') }}</p>
+    <hr>
+{% endfor %}
+
+<h3>Assignments</h3>
+{% for assignment in assignments %}
+    <p>Title: {{ assignment.title }}</p>
+    <p>Description: {{ assignment.description }}</p>
+    <p>Due Date: {{ assignment.due_date.strftime('%Y-%m-%d') }}</p>
+    <p>Status: {{ assignment.status }}</p>
+    <hr>
+{% endfor %}
+
 {% endblock %}
