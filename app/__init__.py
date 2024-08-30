@@ -1,36 +1,33 @@
 #!/usr/bin/env python3
-
 """
-Initialize the Flask application and configure it.
+Initialize the SodLat Edu Solution application.
 """
 
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from app.models import db, User
 from flask_login import LoginManager
-from app.routes.main import main
-from app.routes.auth import auth
 
+db = SQLAlchemy()
+login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('app.config.Config')
+    app.config.from_object('config.Config')
 
-    # Initialize the database and migration
     db.init_app(app)
-    Migrate(app, db)
-
-    # Initialize Flask-Login
-    login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+    from app.routes.main import main
+    from app.routes.auth import auth
+    from app.routes.teacher import teacher
+    from app.routes.student import student
+    from app.routes.parent import parent
 
-    # Register Blueprints
     app.register_blueprint(main)
     app.register_blueprint(auth)
+    app.register_blueprint(teacher)
+    app.register_blueprint(student)
+    app.register_blueprint(parent)
 
     return app

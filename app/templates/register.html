@@ -1,48 +1,36 @@
-<!-- templates/register.html -->
 {% extends "base.html" %}
-
 {% block content %}
-  <h2>{{ welcome_message }}</h2>
-  <form method="POST">
+<h2>{{ welcome_message }}</h2>
+<form method="POST">
     {{ form.hidden_tag() }}
     <div>
-      {{ form.username.label }}<br>
-      {{ form.username(size=32) }}<br>
-      {% for error in form.username.errors %}
-        <span class="error">{{ error }}</span>
-      {% endfor %}
+        {{ form.username.label }}<br>
+        {{ form.username(size=32) }}<br>
     </div>
     <div>
-      {{ form.email.label }}<br>
-      {{ form.email(size=32) }}<br>
-      {% for error in form.email.errors %}
-        <span class="error">{{ error }}</span>
-      {% endfor %}
+        {{ form.email.label }}<br>
+        {{ form.email(size=32) }}<br>
     </div>
     <div>
-      {{ form.password.label }}<br>
-      {{ form.password(size=32) }}<br>
-      {% for error in form.password.errors %}
-        <span class="error">{{ error }}</span>
-      {% endfor %}
+        {{ form.password.label }}<br>
+        {{ form.password(size=32) }}<br>
     </div>
     <div>
-      {{ form.password2.label }}<br>
-      {{ form.password2(size=32) }}<br>
-      {% for error in form.password2.errors %}
-        <span class="error">{{ error }}</span>
-      {% endfor %}
+        {{ form.confirm_password.label }}<br>
+        {{ form.confirm_password(size=32) }}<br>
     </div>
     <div>
-      {{ form.role.label }}<br>
-      {{ form.role() }}<br>
-      {% for error in form.role.errors %}
-        <span class="error">{{ error }}</span>
-      {% endfor %}
+        {{ form.role.label }}<br>
+        {{ form.role() }}<br>
+    </div>
+    <div id="children-field" style="display:none;">
+        {{ form.children.label }}<br>
+        {{ form.children(rows=3) }}<br>
     </div>
     <div>
-      {{ form.submit() }}
+        {{ form.submit() }}
     </div>
-  </form>
-  <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
-{% endblock %}
+</form>
+<script>
+    const roleField = document.querySelector('select[name="role"]');
+    const childrenField = document.getElementById('children-field');

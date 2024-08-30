@@ -1,157 +1,65 @@
 #!/usr/bin/env python3
-"""This module defines the database models for SodLat Edu Solution."""
+"""
+Database models for the SodLat Edu Solution application.
+"""
 
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin
 from datetime import datetime
+from app import db
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-db = SQLAlchemy()
 
-
-class User(db.Model, UserMixin):
-    """User model representing parents, teachers, and students."""
-    __tablename__ = 'users'
+class User(UserMixin, db.Model):
+    """Model for users including parents, teachers, and students."""
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    role = db.Column(db.String(50), nullable=False)
-
-    # Relationships
-    courses = db.relationship('Course', backref='teacher', lazy=True)
-    assignments = db.relationship('Assignment', backref='student', lazy=True)
-    progress_reports = db.relationship(
-        'ProgressReport', backref='student', lazy=True
-    )
-    notifications = db.relationship(
-        'Notification', backref='recipient', lazy=True
-    )
-    sent_messages = db.relationship(
-        'Message',
-        foreign_keys='Message.sender_id',
-        backref='sender',
-        lazy=True
-    )
-    received_messages = db.relationship(
-        'Message',
-        foreign_keys='Message.receiver_id',
-        backref='receiver',
-        lazy=True
-    )
-
-    def __repr__(self):
-        return f"<User {self.username} - Role: {self.role}>"
+    role = db.Column(db.String(64), nullable=False)
+    children = db.relationship('Child', backref='parent', lazy=True)
 
     def set_password(self, password):
+        """Hashes and sets the user's password."""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """Checks if the provided password matches the stored hash."""
         return check_password_hash(self.password_hash, password)
 
 
-class Course(db.Model):
-    """Course model representing the courses managed by teachers."""
-    __tablename__ = 'courses'
+class Child(db.Model):
+    """Model for children associated with parents."""
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(255), nullable=True)
-    teacher_id = db.Column(
-        db.Integer, db.ForeignKey('users.id'), nullable=False
-    )
+    first_name = db.Column(db.String(64), nullable=False)
+    last_name = db.Column(db.String(64), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    progress = db.relationship('ChildProgress', backref='child', lazy=True)
 
-    # Relationships
+
+class Course(db.Model):
+    """Model for courses managed by teachers."""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.String(256))
+    teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     assignments = db.relationship('Assignment', backref='course', lazy=True)
-
-    def __repr__(self):
-        return f"<Course {self.name} - Teacher ID: {self.teacher_id}>"
 
 
 class Assignment(db.Model):
-    """Assignment model representing tasks assigned to students."""
-    __tablename__ = 'assignments'
+    """Model for assignments within courses."""
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(255), nullable=True)
-    due_date = db.Column(
-        db.DateTime, nullable=False, default=datetime.utcnow
-    )
-    student_id = db.Column(
-        db.Integer, db.ForeignKey('users.id'), nullable=False
-    )
-    course_id = db.Column(
-        db.Integer, db.ForeignKey('courses.id'), nullable=False
-    )
-
-    def __repr__(self):
-        return (
-            f"<Assignment {self.title} - Student ID: {self.student_id} - "
-            f"Course ID: {self.course_id}>"
-        )
+    title = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.String(256))
+    due_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    status = db.Column(db.String(64), nullable=False, default='Pending')
 
 
-class ProgressReport(db.Model):
-    """ProgressReport model for tracking student progress."""
-    __tablename__ = 'progress_reports'
+class ChildProgress(db.Model):
+    """Model to track the progress of children in courses."""
     id = db.Column(db.Integer, primary_key=True)
-    report_date = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=datetime.utcnow
-    )
-    grade = db.Column(db.String(5), nullable=False)
-    comments = db.Column(db.Text, nullable=True)
-    student_id = db.Column(
-        db.Integer,
-        db.ForeignKey('users.id'),
-        nullable=False
-    )
-    course_id = db.Column(
-        db.Integer,
-        db.ForeignKey('courses.id'),
-        nullable=False
-    )
-
-    def __repr__(self):
-        return (
-            f"<ProgressReport Grade: {self.grade} - "
-            f"Student ID: {self.student_id}>"
-        )
-
-
-class Notification(db.Model):
-    """Notification model for sending updates to users."""
-    __tablename__ = 'notifications'
-    id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.String(255), nullable=False)
-    is_read = db.Column(db.Boolean, default=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    recipient_id = db.Column(
-        db.Integer, db.ForeignKey('users.id'), nullable=False
-    )
-
-    def __repr__(self):
-        return (
-            f"<Notification {self.message} - "
-            f"Recipient ID: {self.recipient_id}>"
-        )
-
-
-class Message(db.Model):
-    """Message model for communication between users."""
-    __tablename__ = 'messages'
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    sender_id = db.Column(
-        db.Integer, db.ForeignKey('users.id'), nullable=False
-    )
-    receiver_id = db.Column(
-        db.Integer, db.ForeignKey('users.id'), nullable=False
-    )
-
-    def __repr__(self):
-        return (
-            f"<Message from {self.sender_id} to {self.receiver_id} - "
-            f"Sent at {self.timestamp}>"
-        )
+    subject = db.Column(db.String(64), nullable=False)
+    grade = db.Column(db.String(64))
+    attendance = db.Column(db.Integer)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    child_id = db.Column(db.Integer, db.ForeignKey('child.id'), nullable=False)

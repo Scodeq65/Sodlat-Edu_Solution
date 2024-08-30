@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+#!/usr/bin/python3
 """
 Defines the main routes for the application
 and initializes the database.
@@ -27,18 +26,6 @@ def role_required(role):
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
-
-
-def forbidden_if_not_allowed(fn):
-    """
-    Decorator to check if the user has permission to access the page.
-    """
-    @wraps(fn)
-    def decorated_view(*args, **kwargs):
-        if not current_user.is_authenticated:
-            abort(403)  
-        return fn(*args, **kwargs)
-    return decorated_view
 
 
 @main.route('/')

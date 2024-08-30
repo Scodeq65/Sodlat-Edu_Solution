@@ -4,7 +4,7 @@
 <h1>Parent Dashboard</h1>
 <p>Welcome, {{ current_user.username }}!</p>
 
-<h3>Children's Progress</h3>
+<h3>Your Children's Progress</h3>
 {% for progress in children_progress %}
     <p>Subject: {{ progress.subject }}</p>
     <p>Grade: {{ progress.grade }}</p>
@@ -22,4 +22,6 @@
     <hr>
 {% endfor %}
 
+<h2>Messages</h2>
+    <a href="{{ url_for('parent.message_teacher', teacher_id=teacher_id) }}">Message Teacher</a>
 {% endblock %}
